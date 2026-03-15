@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>TrafficSentinel — Upload</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════ VARIABLES */
+:root{
+  --ink:#080c0e;
+  --ink1:#0d1317;
+  --ink2:#111920;
+  --ink3:#162028;
+  --wire:#1e3040;
+  --wire2:#25404f;
+  --dim:#3a6070;
+  --muted:#4e7a8a;
+  --ghost:#6b9aaa;
+  --text:#c8dde6;
+  --text2:#8cb4c2;
+  --amber:#f5a623;
+  --amber2:#ffc65a;
+  --amber3:#fff0c4;
+  --red:#ff3b3b;
+  --red2:#ff7070;
+  --green:#00e676;
+  --green2:#69f0ae;
+  --cyan:#00d4ff;
+  --cyan2:#80eaff;
+  --purple:#b06eff;
+  --orange:#ff7043;
+  --r:4px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+/* SCANLINE TEXTURE */
+body{
+  background:var(--ink);
+  color:var(--text);
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;
+  line-height:1.5;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background:repeating-linear-gradient(
+    0deg,
+    transparent,transparent 2px,
+    rgba(0,0,0,.08) 2px,rgba(0,0,0,.08) 4px
+  );
+  pointer-events:none;z-index:0;
+}
+
+/* GRID OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(0,212,255,.03) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,212,255,.03) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+.z1{position:relative;z-index:1}
+
+/* NAV */
+.nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:56px;
+  background:rgba(8,12,14,.92);
+  border-bottom:1px solid var(--wire2);
+  backdrop-filter:blur(16px);
+  position:sticky;top:0;z-index:100;
+}
+.nav-brand{
+  display:flex;align-items:center;gap:10px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.9rem;letter-spacing:.15em;
+  color:var(--amber);
+}
+.nav-brand-icon{
+  width:28px;height:28px;
+  border:2px solid var(--amber);
+  border-radius:3px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.75rem;
+  box-shadow:0 0 12px rgba(245,166,35,.4),inset 0 0 8px rgba(245,166,35,.1);
+  animation:brandglow 3s ease-in-out infinite;
+}
+@keyframes brandglow{
+  0%,100%{box-shadow:0 0 12px rgba(245,166,35,.4),inset 0 0 8px rgba(245,166,35,.1)}
+  50%{box-shadow:0 0 20px rgba(245,166,35,.7),inset 0 0 12px rgba(245,166,35,.2)}
+}
+.nav-status{
+  display:flex;align-items:center;gap:6px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.68rem;letter-spacing:.1em;
+  color:var(--green);
+}
+.nav-status-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 8px var(--green);
+  animation:blink 2s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.nav-links{display:flex;align-items:center;gap:8px}
+.nav-link{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.72rem;letter-spacing:.08em;
+  color:var(--ghost);
+  text-decoration:none;
+  padding:6px 14px;
+  border:1px solid transparent;
+  border-radius:var(--r);
+  transition:all .2s;
+}
+.nav-link:hover{color:var(--cyan);border-color:var(--wire2)}
+.nav-link-active{
+  color:var(--amber);
+  border-color:rgba(245,166,35,.4);
+  background:rgba(245,166,35,.06);
+}
+
+/* HERO */
+.hero{
+  padding:72px 0 52px;
+  text-align:center;
+  position:relative;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%,rgba(245,166,35,.06) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 40% at 20% 80%,rgba(0,212,255,.04) 0%,transparent 60%);
+  pointer-events:none;
+}
+.hero-overline{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.72rem;letter-spacing:.3em;
+  color:var(--amber);text-transform:uppercase;
+  margin-bottom:20px;
+  display:inline-flex;align-items:center;gap:12px;
+}
+.hero-overline::before,.hero-overline::after{
+  content:'';display:block;
+  width:40px;height:1px;background:var(--amber);opacity:.5;
+}
+.hero h1{
+  font-family:'Rajdhani',sans-serif;
+  font-size:clamp(2.8rem,6vw,5rem);
+  font-weight:700;line-height:1;
+  letter-spacing:.02em;
+  margin-bottom:8px;
+}
+.hero h1 em{
+  font-style:normal;
+  color:var(--amber);
+  text-shadow:0 0 40px rgba(245,166,35,.5);
+}
+.hero-sub{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:1.15rem;font-weight:300;
+  color:var(--ghost);
+  max-width:580px;margin:14px auto 36px;
+  letter-spacing:.02em;
+}
+.tech-pills{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:8px;
+  margin-bottom:12px;
+}
+.pill{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.65rem;letter-spacing:.1em;
+  padding:4px 12px;
+  border:1px solid;border-radius:2px;
+  transition:all .25s;
+}
+.pill:hover{filter:brightness(1.4)}
+.pill-a{color:var(--cyan);border-color:rgba(0,212,255,.35);background:rgba(0,212,255,.05)}
+.pill-b{color:var(--amber);border-color:rgba(245,166,35,.35);background:rgba(245,166,35,.05)}
+.pill-c{color:var(--green);border-color:rgba(0,230,118,.35);background:rgba(0,230,118,.05)}
+.pill-d{color:var(--purple);border-color:rgba(176,110,255,.35);background:rgba(176,110,255,.05)}
+.pill-e{color:var(--orange);border-color:rgba(255,112,67,.35);background:rgba(255,112,67,.05)}
+
+/* UPLOAD CARD */
+.upload-section{padding:8px 0 80px}
+.container{max-width:1160px;margin:0 auto;padding:0 32px}
+
+.upload-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:0;
+  border:1px solid var(--wire2);
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(0,212,255,.04),0 24px 64px rgba(0,0,0,.6);
+}
+
+/* Left: drop zone */
+.upload-drop{
+  background:var(--ink1);
+  padding:56px 40px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;
+  position:relative;
+  border-right:1px solid var(--wire2);
+  cursor:pointer;
+  transition:background .2s;
+  min-height:380px;
+}
+.upload-drop.drag-over,.upload-drop:hover{
+  background:var(--ink2);
+}
+.upload-drop input[type=file]{
+  position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;z-index:2;
+}
+.drop-ring{
+  width:100px;height:100px;border-radius:50%;
+  border:2px dashed var(--wire2);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:24px;
+  transition:all .3s;
+  position:relative;
+}
+.upload-drop:hover .drop-ring,.upload-drop.drag-over .drop-ring{
+  border-color:var(--amber);
+  box-shadow:0 0 30px rgba(245,166,35,.2);
+}
+.drop-ring-icon{font-size:2.4rem}
+.drop-title{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.4rem;font-weight:600;
+  margin-bottom:6px;color:var(--text);
+}
+.drop-sub{font-size:.88rem;color:var(--muted);letter-spacing:.02em}
+.drop-formats{
+  margin-top:12px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.65rem;letter-spacing:.08em;
+  color:var(--dim);
+  padding:5px 12px;
+  border:1px solid var(--wire);
+  border-radius:2px;
+  display:inline-block;
+}
+.drop-filename{
+  margin-top:14px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.75rem;
+  color:var(--amber);
+  max-width:280px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  padding:5px 10px;
+  background:rgba(245,166,35,.06);
+  border:1px solid rgba(245,166,35,.2);
+  border-radius:var(--r);
+}
+.drop-filename:empty{display:none}
+
+/* Right: info panel */
+.upload-info{
+  background:var(--ink2);
+  padding:44px 40px;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.upload-info-head h2{
+  font-family:'Rajdhani',sans-serif;
+  font-size:1.6rem;font-weight:700;
+  margin-bottom:8px;color:var(--text);
+}
+.upload-info-head p{
+  font-size:.93rem;color:var(--text2);
+  line-height:1.6;margin-bottom:24px;
+}
+.detect-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.detect-item{
+  display:flex;align-items:center;gap:14px;
+  padding:10px 14px;
+  background:var(--ink1);
+  border:1px solid var(--wire);
+  border-radius:var(--r);
+  transition:border-color .2s;
+}
+.detect-item:hover{border-color:var(--wire2)}
+.di-icon{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+.di-text h4{font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:1px;letter-spacing:.03em}
+.di-text p{font-size:.75rem;color:var(--muted)}
+.di-badge{
+  margin-left:auto;flex-shrink:0;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.6rem;letter-spacing:.06em;
+  padding:2px 7px;border-radius:2px;
+}
+.di-b-fsm{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+.di-b-ml{background:rgba(245,166,35,.1);color:var(--amber);border:1px solid rgba(245,166,35,.2)}
+.di-b-seg{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.di-b-ocr{background:rgba(176,110,255,.1);color:var(--purple);border:1px solid rgba(176,110,255,.2)}
+
+.upload-actions{display:flex;flex-direction:column;gap:10px}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  padding:13px 24px;
+  border-radius:var(--r);
+  font-family:'Rajdhani',sans-serif;
+  font-weight:600;font-size:1rem;
+  letter-spacing:.08em;text-transform:uppercase;
+  border:none;cursor:pointer;
+  text-decoration:none;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.btn-amber{
+  background:var(--amber);color:#000;
+  box-shadow:0 0 24px rgba(245,166,35,.35);
+}
+.btn-amber:hover{background:var(--amber2);box-shadow:0 0 36px rgba(245,166,35,.55);transform:translateY(-1px)}
+.btn-amber:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-outline{
+  background:transparent;
+  color:var(--ghost);
+  border:1px solid var(--wire2);
+}
+.btn-outline:hover{border-color:var(--ghost);color:var(--text)}
+.btn-outline-red{
+  background:transparent;color:var(--red2);border:1px solid rgba(255,59,59,.3);
+}
+.btn-outline-red:hover{background:rgba(255,59,59,.07);border-color:var(--red)}
+
+/* FLASH */
+.flash{
+  padding:12px 18px;border-radius:var(--r);
+  margin-bottom:20px;
+  font-family:'Share Tech Mono',monospace;font-size:.78rem;
+  letter-spacing:.05em;
+  border-left:3px solid;
+  display:flex;align-items:center;gap:10px;
+}
+.flash-error{background:rgba(255,59,59,.08);border-color:var(--red);color:var(--red2)}
+.flash-info{background:rgba(0,212,255,.06);border-color:var(--cyan);color:var(--cyan2)}
+
+/* PIPELINE DIAGRAM */
+.pipeline-section{padding:40px 0}
+.pipeline-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.68rem;letter-spacing:.2em;color:var(--dim);
+  text-transform:uppercase;margin-bottom:16px;
+  display:flex;align-items:center;gap:10px;
+}
+.pipeline-label::after{content:'';flex:1;height:1px;background:var(--wire)}
+.pipeline{
+  display:flex;align-items:stretch;
+  overflow-x:auto;
+  gap:0;
+  border:1px solid var(--wire2);
+  border-radius:6px;
+  overflow:hidden;
+}
+.pipe-node{
+  flex:1;min-width:110px;
+  padding:18px 14px;
+  text-align:center;
+  background:var(--ink1);
+  border-right:1px solid var(--wire2);
+  transition:background .2s;
+  position:relative;
+}
+.pipe-node:last-child{border-right:none}
+.pipe-node:hover{background:var(--ink2)}
+.pipe-node::after{
+  content:'›';
+  position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  color:var(--wire2);font-size:1.2rem;z-index:2;
+  pointer-events:none;
+}
+.pipe-node:last-child::after{display:none}
+.pn-icon{font-size:1.4rem;margin-bottom:8px}
+.pn-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:.62rem;letter-spacing:.08em;
+  color:var(--amber);display:block;margin-bottom:3px;
+}
+.pn-sub{font-size:.68rem;color:var(--muted)}
+
+/* LOADER */
+#loader{
+  position:fixed;inset:0;
+  background:rgba(8,12,14,.96);
+  z-index:9999;display:none;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:32px;
+}
+#loader.on{display:flex}
+.loader-frame{
+  width:80px;height:80px;
+  position:relative;
+}
+.loader-frame::before,.loader-frame::after{
+  content:'';position:absolute;
+  border-radius:50%;
+}
+.loader-frame::before{
+  inset:0;
+  border:2px solid var(--wire2);
+}
+.loader-frame::after{
+  inset:4px;
+  border:2px solid transparent;
+  border-top-color:var(--amber);
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-inner{
+  position:absolute;inset:14px;
+  border:1px solid rgba(245,166,35,.3);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;
+}
+.loader-body{text-align:center}
+.loader-title{
+  font-family:'Share Tech Mono',monospace;font-size:.88rem;
+  letter-spacing:.15em;color:var(--amber);
+}
+.loader-msg{
+  margin-top:8px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.72rem;letter-spacing:.08em;color:var(--muted);
+}
+.loader-bar-wrap{
+  width:260px;height:3px;
+  background:var(--wire);
+  border-radius:2px;overflow:hidden;
+}
+.loader-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--amber),var(--amber2));
+  border-radius:2px;
+  animation:loadprog 12s ease-in forwards;
+}
+@keyframes loadprog{
+  0%{width:0%}10%{width:12%}30%{width:35%}50%{width:52%}
+  70%{width:68%}85%{width:82%}95%{width:91%}100%{width:91%}
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--wire);
+  padding:24px 32px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:'Share Tech Mono',monospace;
+  font-size:.65rem;letter-spacing:.08em;color:var(--dim);
+}
+
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--ink)}
+::-webkit-scrollbar-thumb{background:var(--wire2);border-radius:3px}
+
+@media(max-width:820px){
+  .upload-grid{grid-template-columns:1fr}
+  .upload-drop{border-right:none;border-bottom:1px solid var(--wire2)}
+}
+@media(max-width:520px){
+  .hero h1{font-size:2.4rem}
+  .nav{padding:0 16px}
+  .container{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-frame">
+    <div class="loader-inner">📡</div>
+  </div>
+  <div class="loader-body">
+    <div class="loader-title">ANALYSING STREAM</div>
+    <div class="loader-msg" id="lmsg">Initialising pipeline…</div>
+  </div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+</div>
+
+<!-- NAV -->
+<nav class="nav z1">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">TS</div>
+    TRAFFICSENTINEL
+  </div>
+  <div style="display:flex;align-items:center;gap:20px">
+    <div class="nav-status">
+      <div class="nav-status-dot"></div>
+      SYSTEM ONLINE
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-link nav-link-active">UPLOAD</a>
+      <a href="/history" class="nav-link">HISTORY &nbsp;
+        {% if history_count > 0 %}
+        <span style="background:rgba(245,166,35,.2);color:var(--amber);padding:1px 6px;border-radius:2px;font-size:.62rem">{{history_count}}</span>
+        {% endif %}
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero z1">
+  <div class="hero-bg"></div>
+  <div class="container">
+    <div class="hero-overline">Smart City Surveillance System</div>
+    <h1>Road Traffic<br/><em>Violation Detection</em></h1>
+    <p class="hero-sub">Near-production AI pipeline combining panoptic segmentation, multi-class detection, persistent tracking, and temporal rule engines.</p>
+    <div class="tech-pills">
+      <span class="pill pill-a">MASK2FORMER</span>
+      <span class="pill pill-b">YOLOV8</span>
+      <span class="pill pill-c">BYTETRACK</span>
+      <span class="pill pill-d">EASYOCR</span>
+      <span class="pill pill-e">TEMPORAL FSM</span>
+      <span class="pill pill-a">≥75% CONFIDENCE</span>
+    </div>
+  </div>
+</section>
+
+<!-- UPLOAD -->
+<div class="z1">
+<div class="container">
+
+  {% if error %}
+  <div class="flash flash-error">⚠ {{error}}</div>
+  {% endif %}
+  {% with msgs=get_flashed_messages(with_categories=true) %}
+    {% for cat,msg in msgs %}
+    <div class="flash flash-{{cat}}">{{msg}}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <section class="upload-section">
+    <form id="uform" action="/upload" method="POST" enctype="multipart/form-data">
+      <div class="upload-grid">
+
+        <!-- DROP ZONE -->
+        <div class="upload-drop" id="dropzone">
+          <input type="file" name="video" id="finput" accept=".mp4,.avi,.mov,.mkv,.webm" required/>
+          <div class="drop-ring">
+            <span class="drop-ring-icon">📁</span>
+          </div>
+          <div class="drop-title">Drop Video File</div>
+          <div class="drop-sub">or click anywhere to browse</div>
+          <div class="drop-formats">MP4 &nbsp;·&nbsp; AVI &nbsp;·&nbsp; MOV &nbsp;·&nbsp; MKV &nbsp;·&nbsp; WEBM &nbsp;·&nbsp; MAX 500MB</div>
+          <div class="drop-filename" id="fname"></div>
+        </div>
+
+        <!-- INFO PANEL -->
+        <div class="upload-info">
+          <div class="upload-info-head">
+            <h2>Violation Detection Pipeline</h2>
+            <p>Upload any traffic camera footage. The AI analyses every frame and reports only high-confidence (≥75%) violations.</p>
+            <ul class="detect-list">
+              <li class="detect-item">
+                <span class="di-icon">🚦</span>
+                <div class="di-text"><h4>Red-Light Jumping</h4><p>FSM state machine + signal colour detection</p></div>
+                <span class="di-badge di-b-fsm">FSM</span>
+              </li>
+              <li class="detect-item">
+                <span class="di-icon">🪖</span>
+                <div class="di-text"><h4>Helmet Violations</h4><p>Rider association + temporal head-crop vote</p></div>
+                <span class="di-badge di-b-ml">ML</span>
+              </li>
+              <li class="detect-item">
+                <span class="di-icon">🛣️</span>
+                <div class="di-text"><h4>Lane Violations</h4><p>Segmentation zone containment + crossing FSM</p></div>
+                <span class="di-badge di-b-seg">SEG</span>
+              </li>
+              <li class="detect-item">
+                <span class="di-icon">💨</span>
+                <div class="di-text"><h4>Over-Speed</h4><p>Pixel displacement → km/h estimation</p></div>
+                <span class="di-badge di-b-fsm">FSM</span>
+              </li>
+              <li class="detect-item">
+                <span class="di-icon">🔤</span>
+                <div class="di-text"><h4>Number Plate OCR</h4><p>EasyOCR + multi-frame majority vote</p></div>
+                <span class="di-badge di-b-ocr">OCR</span>
+              </li>
+            </ul>
+          </div>
+          <div class="upload-actions">
+            <button type="submit" class="btn btn-amber" id="sbtn">
+              ▶ &nbsp; RUN DETECTION
+            </button>
+            <a href="/history" class="btn btn-outline">📋 &nbsp; VIEW HISTORY</a>
+            <form action="/reset" method="POST" style="margin:0">
+              <button type="submit" class="btn btn-outline-red" style="width:100%">↺ &nbsp; RESET TEMP FILES</button>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </form>
+  </section>
+
+  <!-- PIPELINE DIAGRAM -->
+  <section class="pipeline-section">
+    <div class="pipeline-label">Processing Pipeline</div>
+    <div class="pipeline">
+      <div class="pipe-node"><div class="pn-icon">🎥</div><span class="pn-label">VIDEO IN</span><div class="pn-sub">Frame reader</div></div>
+      <div class="pipe-node"><div class="pn-icon">🗺</div><span class="pn-label">MASK2FORMER</span><div class="pn-sub">Road segmentation</div></div>
+      <div class="pipe-node"><div class="pn-icon">🔍</div><span class="pn-label">YOLOV8</span><div class="pn-sub">Object detection</div></div>
+      <div class="pipe-node"><div class="pn-icon">🎯</div><span class="pn-label">BYTETRACK</span><div class="pn-sub">Persistent IDs</div></div>
+      <div class="pipe-node"><div class="pn-icon">🚦</div><span class="pn-label">SIGNAL</span><div class="pn-sub">State detection</div></div>
+      <div class="pipe-node"><div class="pn-icon">⚖️</div><span class="pn-label">RULE ENGINE</span><div class="pn-sub">Temporal FSM</div></div>
+      <div class="pipe-node"><div class="pn-icon">🔤</div><span class="pn-label">EASYOCR</span><div class="pn-sub">Plate extraction</div></div>
+      <div class="pipe-node"><div class="pn-icon">📊</div><span class="pn-label">DASHBOARD</span><div class="pn-sub">History + evidence</div></div>
+    </div>
+  </section>
+
+</div>
+</div>
+
+<footer class="z1">
+  <span>TRAFFICSENTINEL v2.0 · MASK2FORMER + YOLOV8 + BYTETRACK + EASYOCR</span>
+  <span style="color:var(--green)">● OPERATIONAL</span>
+</footer>
+
+<script>
+const dz=document.getElementById('dropzone'),fi=document.getElementById('finput'),fn=document.getElementById('fname'),sb=document.getElementById('sbtn'),lm=document.getElementById('lmsg');
+fi.addEventListener('change',()=>{if(fi.files[0]){fn.textContent='▸ '+fi.files[0].name+' ('+( fi.files[0].size/1048576).toFixed(1)+' MB)';dz.style.borderColor='var(--amber)';}});
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');if(e.dataTransfer.files[0]){fi.files=e.dataTransfer.files;fn.textContent='▸ '+e.dataTransfer.files[0].name;}});
+const msgs=['Loading models...','Reading frames...','Running Mask2Former segmentation...','Detecting objects with YOLOv8...','Assigning ByteTrack IDs...','Evaluating signal states...','Running temporal violation FSM...','Extracting number plates (EasyOCR)...','Filtering by confidence ≥75%...','Saving session to history...'];
+let mi=0;
+document.getElementById('uform').addEventListener('submit',e=>{
+  if(!fi.files.length){e.preventDefault();alert('Select a video file first.');return;}
+  sb.disabled=true;sb.textContent='⏳  PROCESSING…';
+  document.getElementById('loader').classList.add('on');
+  const iv=setInterval(()=>{mi=(mi+1)%msgs.length;lm.textContent=msgs[mi];},2400);
+  window.addEventListener('pagehide',()=>clearInterval(iv));
+});
+</script>
+</body>
+</html>
